@@ -21,7 +21,7 @@
         unit_number: 0
         state: present
         type: iso
-        iso_path: "[datastore 1]/ISO/SW_DVD9_Win_Server_STD_CORE_2019_1809.2_64Bit_French_DC_STD_MLF_X22-18453.iso"
+        iso_path: "{{ iso_path }}"
     networks:
       - name: LAN
         type: static
