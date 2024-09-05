@@ -31,8 +31,10 @@
         dns_servers: 8.8.8.8
     disk:
       - size_gb: 40
-        controller_type: 'nvme'
         type: thin
         datastore: Datastore
+        controller_type: 'nvme'
+        controller_number: 0
+        unit_number: 0
     wait_for_ip_address: yes
   delegate_to: localhost
