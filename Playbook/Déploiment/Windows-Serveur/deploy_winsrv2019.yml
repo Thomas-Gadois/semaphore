@@ -1,0 +1,7 @@
+---
+- hosts: esxi
+  vars_files:
+    - ../global_vars/vars.yml
+  gather_facts: no
+  roles:
+    - create_vm
