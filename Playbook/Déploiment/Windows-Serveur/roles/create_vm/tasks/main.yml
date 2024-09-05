@@ -12,6 +12,7 @@
     guest_id: windows9Server64Guest
     state: poweredon
     hardware:
+      boot_firmware: efi
       num_cpus: 2
       memory_mb: 4096
       scsi: paravirtual
