@@ -1,0 +1,36 @@
+#
+---
+- name: Create a new virtual machine
+  community.vmware.vmware_guest:
+    hostname: "{{ esxi_hostname }}"
+    username: "{{ esxi_user }}"
+    password: "{{ esxi_pass }}"
+    datastore: "{{ datastore_name }}"
+    folder: "/"
+    validate_certs: no
+    name: "{{ vm_name }}"
+    guest_id: windows9Server64Guest
+    state: poweredon
+    hardware:
+      num_cpus: 2
+      memory_mb: 4096
+      scsi: paravirtual
+    cdrom:
+      - controller_number: 0
+        unit_number: 0
+        state: present
+        type: iso
+        iso_path: "[datastore 1]/ISO/SW_DVD9_Win_Server_STD_CORE_2019_1809.2_64Bit_French_DC_STD_MLF_X22-18453.iso"
+    networks:
+      - name: LAN
+        type: static
+        ip: "{{ vm_ip }}"
+        netmask: 255.255.255.0
+        gateway: 192.168.25.254
+        dns_servers: 8.8.8.8
+    disk:
+      - size_gb: 40
+        type: thin
+        datastore: Datastore ISCSI
+    wait_for_ip_address: yes
+  delegate_to: localhost
