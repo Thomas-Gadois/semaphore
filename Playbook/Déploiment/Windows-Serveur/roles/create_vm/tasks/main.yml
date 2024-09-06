@@ -1,3 +1,4 @@
+---
 # Tâche pour créer la VM mais en état éteinte
 - name: Create a new virtual machine (powered off)
   community.vmware.vmware_guest:
@@ -9,15 +10,15 @@
     validate_certs: no
     name: "{{ vm_name }}"
     guest_id: windows9Server64Guest
-    state: poweredoff  # Créer la VM mais la laisser éteinte
+    state: poweredoff
     hardware:
       boot_firmware: efi
       num_cpus: 2
       memory_mb: 4096
       scsi: paravirtual
     cdrom:
-      - controller_number: 0
-        unit_number: 0
+      - controller_number: 1  # Contrôleur du CD-ROM
+        unit_number: 0        # Unité du CD-ROM
         state: present
         type: iso
         iso_path: "{{ iso_path }}"
@@ -33,34 +34,7 @@
         type: thin
         datastore: "{{ datastore_name }}"
         controller_type: 'nvme'
-        controller_number: 0
-        unit_number: 0
-    wait_for_ip_address: no  # Pas besoin de cette option tant que la VM n'est pas allumée
-  delegate_to: localhost
-
-# Ajoute une pause pour s'assurer que la création est terminée
-- name: Pause for 10 seconds
-  pause:
-    seconds: 40
-
-# Allume la VM après la création
-- name: Power on the VM
-  community.vmware.vmware_guest_powerstate:
-    hostname: "{{ esxi_hostname }}"
-    username: "{{ esxi_user }}"
-    password: "{{ esxi_pass }}"
-    name: "{{ vm_name }}"
-    state: poweredon
-    validate_certs: no
-  delegate_to: localhost
-
-# Attends que l'IP soit attribuée
-- name: Wait for the VM to get an IP address
-  community.vmware.vmware_guest:
-    hostname: "{{ esxi_hostname }}"
-    username: "{{ esxi_user }}"
-    password: "{{ esxi_pass }}"
-    name: "{{ vm_name }}"
-    wait_for_ip_address: yes
-    state: present
+        controller_number: 0  # Contrôleur du disque
+        unit_number: 0        # Unité du disque
+    wait_for_ip_address: no
   delegate_to: localhost
