@@ -16,6 +16,8 @@
       num_cpus: 2
       memory_mb: 4096
       scsi: paravirtual
+      boot:
+        type: cdrom
     cdrom:
       - controller_number: 0
         unit_number: 0
