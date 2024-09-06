@@ -10,7 +10,7 @@
     validate_certs: no
     name: "{{ vm_name }}"
     guest_id: windows9Server64Guest
-    state: "{{ state }}"
+    state: poweredoff
     hardware:
       boot_firmware: efi
       num_cpus: 2
