@@ -10,7 +10,7 @@
     validate_certs: no
     name: "{{ vm_name }}"
     guest_id: windows9Server64Guest
-    state: poweredoff
+    state: "{{ state }}"
     hardware:
       boot_firmware: efi
       num_cpus: 2
@@ -37,20 +37,4 @@
         gateway: 192.168.25.254
         dns_servers: 8.8.8.8
     wait_for_ip_address: no
-  delegate_to: localhost
-
-# Pause après création
-- name: Pause for 10 seconds
-  pause:
-    seconds: 30
-
-# Allume la VM après création
-- name: Power on the VM
-  community.vmware.vmware_guest_powerstate:
-    hostname: "{{ esxi_hostname }}"
-    username: "{{ esxi_user }}"
-    password: "{{ esxi_pass }}"
-    name: "{{ vm_name }}"
-    state: poweredon
-    validate_certs: no
   delegate_to: localhost
