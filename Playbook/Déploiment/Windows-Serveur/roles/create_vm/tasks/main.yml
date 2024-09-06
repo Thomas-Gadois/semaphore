@@ -10,7 +10,7 @@
     validate_certs: no
     name: "{{ vm_name }}"
     guest_id: windows9Server64Guest
-    state: poweredoff  # Créer la VM mais la laisser éteinte
+    state: powered-off  # Créer la VM mais la laisser éteinte
     hardware:
       boot_firmware: efi
       num_cpus: 2
@@ -51,6 +51,7 @@
     username: "{{ esxi_user }}"
     password: "{{ esxi_pass }}"
     name: "{{ vm_name }}"
-    state: poweredon
+    folder: "/"
+    state: powered-on
     validate_certs: no
   delegate_to: localhost
