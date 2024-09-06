@@ -10,15 +10,22 @@
     validate_certs: no
     name: "{{ vm_name }}"
     guest_id: windows9Server64Guest
-    state: poweredon
+    state: poweredoff
     hardware:
       boot_firmware: efi
       num_cpus: 2
       memory_mb: 4096
       scsi: paravirtual
+    disk:
+      - size_gb: 40
+        type: thin
+        datastore: "{{ datastore_name }}"
+        controller_type: 'nvme'
+        controller_number: 0
+        unit_number: 0
     cdrom:
-      - controller_number: 1  # Contrôleur du CD-ROM
-        unit_number: 0        # Unité du CD-ROM
+      - controller_number: 1
+        unit_number: 0
         state: present
         type: iso
         iso_path: "{{ iso_path }}"
@@ -29,12 +36,21 @@
         netmask: 255.255.255.0
         gateway: 192.168.25.254
         dns_servers: 8.8.8.8
-    disk:
-      - size_gb: 40
-        type: thin
-        datastore: "{{ datastore_name }}"
-        controller_type: 'nvme'
-        controller_number: 0  # Contrôleur du disque
-        unit_number: 0        # Unité du disque
     wait_for_ip_address: no
+  delegate_to: localhost
+
+# Pause après création
+- name: Pause for 10 seconds
+  pause:
+    seconds: 30
+
+# Allume la VM après création
+- name: Power on the VM
+  community.vmware.vmware_guest_powerstate:
+    hostname: "{{ esxi_hostname }}"
+    username: "{{ esxi_user }}"
+    password: "{{ esxi_pass }}"
+    name: "{{ vm_name }}"
+    state: poweredon
+    validate_certs: no
   delegate_to: localhost
