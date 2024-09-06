@@ -10,19 +10,12 @@
     validate_certs: no
     name: "{{ vm_name }}"
     guest_id: windows9Server64Guest
-    state: poweredoff
+    state: poweredoff  # Créer la VM mais la laisser éteinte
     hardware:
       boot_firmware: efi
       num_cpus: 2
       memory_mb: 4096
       scsi: paravirtual
-    disk:
-      - size_gb: 40
-        type: thin
-        datastore: "{{ datastore_name }}"
-        controller_type: 'nvme'
-        controller_number: 0
-        unit_number: 0
     cdrom:
       - controller_number: 1
         unit_number: 0
@@ -32,9 +25,32 @@
     networks:
       - name: LAN
         type: static
-        ip: "{{ vm_ip }}"
+        ip: "{{ vm_ip }}"  # IP statique configurée ici
         netmask: 255.255.255.0
         gateway: 192.168.25.254
         dns_servers: 8.8.8.8
-    wait_for_ip_address: no
+    disk:
+      - size_gb: 40
+        type: thin
+        datastore: "{{ datastore_name }}"
+        controller_type: 'nvme'
+        controller_number: 0
+        unit_number: 0
+    wait_for_ip_address: no  # Inutile car l'IP est statique
+  delegate_to: localhost
+
+# Ajoute une pause pour s'assurer que la création est terminée
+- name: Pause for 10 seconds
+  pause:
+    seconds: 120
+
+# Allume la VM après la création
+- name: Power on the VM
+  community.vmware.vmware_guest_powerstate:
+    hostname: "{{ esxi_hostname }}"
+    username: "{{ esxi_user }}"
+    password: "{{ esxi_pass }}"
+    name: "{{ vm_name }}"
+    state: poweredon
+    validate_certs: no
   delegate_to: localhost
