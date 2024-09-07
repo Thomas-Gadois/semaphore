@@ -68,7 +68,7 @@
 # Ajoute une pause pour s'assurer que la création est terminée
 - name: Pause for 10 seconds
   pause:
-    seconds: 400
+    seconds: 300
 
 # Configurer l'adresse IP statique une fois que la VM est allumée
 - name: Set static IP on the VM
