@@ -51,7 +51,7 @@
 # Ajoute une pause pour s'assurer que la création est terminée
 - name: Pause for 10 seconds
   pause:
-    seconds: 60
+    seconds: 40
 
 # Allume la VM après la création
 - name: Power on the VM
