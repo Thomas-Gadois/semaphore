@@ -31,7 +31,6 @@
         unit_number: 0
     networks:
       - name: LAN
-        type: static
         device_type: e1000e
     wait_for_ip_address: no
   delegate_to: localhost
@@ -69,7 +68,7 @@
 # Ajoute une pause pour s'assurer que la création est terminée
 - name: Pause for 10 seconds
   pause:
-    seconds: 240
+    seconds: 300
 
 # Configurer l'adresse IP statique une fois que la VM est allumée
 - name: Set static IP on the VM
