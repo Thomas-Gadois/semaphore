@@ -49,6 +49,7 @@
     controllers:
       - state: present
         type: usb3
+    validate_certs: no
   delegate_to: localhost
 
 # Ajoute une pause pour s'assurer que la création est terminée
