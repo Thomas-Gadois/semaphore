@@ -22,14 +22,6 @@
         state: present
         type: iso
         iso_path: "{{ iso_path }}"
-    networks:
-      - name: LAN
-        device_type: e1000e 
-        type: static
-        ip: "{{ vm_ip }}"  # IP statique configurée ici
-        netmask: 255.255.255.0
-        gateway: 192.168.25.254
-        dns_servers: 8.8.8.8
     disk:
       - size_gb: 40
         type: thin
@@ -37,7 +29,7 @@
         controller_type: 'nvme'
         controller_number: 0
         unit_number: 0
-    wait_for_ip_address: no  # Inutile car l'IP est statique
+    wait_for_ip_address: no
   delegate_to: localhost
 
 # Ajouter un contrôleur USB à la VM
@@ -68,4 +60,23 @@
     folder: "/"
     state: powered-on
     validate_certs: no
+  delegate_to: localhost
+
+# Configurer l'adresse IP statique une fois que la VM est allumée
+- name: Set static IP on the VM
+  community.vmware.vmware_guest:
+    hostname: "{{ esxi_hostname }}"
+    username: "{{ esxi_user }}"
+    password: "{{ esxi_pass }}"
+    name: "{{ vm_name }}"
+    state: present
+    validate_certs: no
+    networks:
+      - name: LAN
+        type: static
+        ip: "{{ vm_ip }}"
+        netmask: 255.255.255.0
+        gateway: 192.168.25.254
+        dns_servers: 8.8.8.8
+    wait_for_ip_address: no
   delegate_to: localhost
