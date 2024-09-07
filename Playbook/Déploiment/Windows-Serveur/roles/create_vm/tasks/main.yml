@@ -10,7 +10,7 @@
     validate_certs: no
     name: "{{ vm_name }}"
     guest_id: windows9Server64Guest
-    state: powered-off  # Créer la VM mais la laisser éteinte
+    state: present #powered-off  # Créer la VM mais la laisser éteinte
     hardware:
       boot_firmware: efi
       num_cpus: 2
@@ -31,7 +31,12 @@
         unit_number: 0
     networks:
       - name: LAN
+        type: static
         device_type: e1000e
+        ip: "{{ vm_ip }}"
+        netmask: 255.255.255.0
+        gateway: 192.168.25.254
+        dns_servers: 8.8.8.8
     wait_for_ip_address: no
   delegate_to: localhost
 
@@ -46,46 +51,4 @@
       - state: present
         type: usb3
     validate_certs: no
-  delegate_to: localhost
-
-# Ajoute une pause pour s'assurer que la création est terminée
-- name: Pause for 10 seconds
-  pause:
-    seconds: 40
-
-# Allume la VM après la création
-- name: Power on the VM
-  community.vmware.vmware_guest_powerstate:
-    hostname: "{{ esxi_hostname }}"
-    username: "{{ esxi_user }}"
-    password: "{{ esxi_pass }}"
-    name: "{{ vm_name }}"
-    folder: "/"
-    state: powered-on
-    validate_certs: no
-  delegate_to: localhost
-
-# Ajoute une pause pour s'assurer que la création est terminée
-- name: Pause for 10 seconds
-  pause:
-    seconds: 300
-
-# Configurer l'adresse IP statique une fois que la VM est allumée
-- name: Set static IP on the VM
-  community.vmware.vmware_guest:
-    hostname: "{{ esxi_hostname }}"
-    username: "{{ esxi_user }}"
-    password: "{{ esxi_pass }}"
-    name: "{{ vm_name }}"
-    state: present
-    validate_certs: no
-    networks:
-      - name: LAN
-        type: static
-        device_type: e1000e
-        ip: "{{ vm_ip }}"
-        netmask: 255.255.255.0
-        gateway: 192.168.25.254
-        dns_servers: 8.8.8.8
-    wait_for_ip_address: yes
   delegate_to: localhost
