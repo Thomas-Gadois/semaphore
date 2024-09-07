@@ -46,9 +46,9 @@
     username: "{{ esxi_user }}"
     password: "{{ esxi_pass }}"
     name: "{{ vm_name }}"
-    type: usb
-    state: present
-    validate_certs: no
+    controllers:
+      - state: present
+        type: usb3
   delegate_to: localhost
 
 # Ajoute une pause pour s'assurer que la création est terminée
