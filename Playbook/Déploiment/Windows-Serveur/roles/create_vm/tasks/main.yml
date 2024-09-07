@@ -24,6 +24,7 @@
         iso_path: "{{ iso_path }}"
     networks:
       - name: LAN
+        device_type: e1000e 
         type: static
         ip: "{{ vm_ip }}"  # IP statique configurée ici
         netmask: 255.255.255.0
