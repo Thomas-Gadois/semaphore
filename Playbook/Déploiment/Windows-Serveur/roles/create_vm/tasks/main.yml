@@ -29,6 +29,10 @@
         controller_type: 'nvme'
         controller_number: 0
         unit_number: 0
+    networks:
+      - name: LAN
+        type: static
+        device_type: e1000e
     wait_for_ip_address: no
   delegate_to: localhost
 
@@ -62,6 +66,11 @@
     validate_certs: no
   delegate_to: localhost
 
+# Ajoute une pause pour s'assurer que la création est terminée
+- name: Pause for 10 seconds
+  pause:
+    seconds: 240
+
 # Configurer l'adresse IP statique une fois que la VM est allumée
 - name: Set static IP on the VM
   community.vmware.vmware_guest:
@@ -74,6 +83,7 @@
     networks:
       - name: LAN
         type: static
+        device_type: e1000e
         ip: "{{ vm_ip }}"
         netmask: 255.255.255.0
         gateway: 192.168.25.254
