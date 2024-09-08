@@ -10,7 +10,7 @@
     validate_certs: no
     name: "{{ vm_name }}"
     guest_id: windows9Server64Guest
-    state: powered-off  # Créer la VM mais la laisser éteinte
+    state: powered-on  # Créer la VM mais la laisser éteinte
     hardware:
       boot_firmware: efi
       num_cpus: 2
@@ -52,3 +52,30 @@
         type: usb3
     validate_certs: no
   delegate_to: localhost
+
+# Pause pour laisser le temps d'installation des VMware Tools
+- name: Wait for VMware Tools to be installed
+  pause:
+    seconds: 300  # Ajuster selon le temps nécessaire
+
+# Tâche pour créer la VM mais en état éteinte
+- name: Create a new virtual machine (powered off)
+  community.vmware.vmware_guest:
+    hostname: "{{ esxi_hostname }}"
+    username: "{{ esxi_user }}"
+    password: "{{ esxi_pass }}"
+    datastore: "{{ datastore_name }}"
+    name: "{{ vm_name }}"
+    cdrom:
+      - controller_number: 1
+        unit_number: 0
+        state: present
+        type: iso
+        iso_path: [] /usr/lib/vmware/isoimages/windows.iso
+    validate_certs: no
+    customization:
+     runonce:
+      - powershell.exe Start-Process -Wait -FilePath "D:\setup.exe" -ArgumentList "/S /v /qn REBOOT=R"
+  delegate_to: localhost
+
+  
