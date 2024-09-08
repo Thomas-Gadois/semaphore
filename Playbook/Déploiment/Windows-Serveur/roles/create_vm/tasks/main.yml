@@ -76,7 +76,7 @@
         dns_servers: 8.8.8.8
     customization:
       runonce:
-      - powershell.exe Start-Process -Wait -FilePath "D:\setup.exe" -ArgumentList "/S /v /qn REBOOT=R"
+      - powershell.exe Start-Process -Wait -FilePath "D:\setup64.exe" -ArgumentList "/S /v /qn REBOOT=R"
     validate_certs: no
   delegate_to: localhost
 
