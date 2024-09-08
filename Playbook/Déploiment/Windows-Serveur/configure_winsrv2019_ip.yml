@@ -1,0 +1,5 @@
+---
+- hosts: windows_vm
+  gather_facts: no
+  roles:
+    - configure_ip
