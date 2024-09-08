@@ -1,0 +1,8 @@
+---
+- name: Set static IP address on Windows VM
+  win_shell: |
+    New-NetIPAddress -InterfaceAlias "Ethernet" -IPAddress {{ vm_ip }} -PrefixLength 24 -DefaultGateway 192.168.25.254
+    Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses 8.8.8.8
+
+- name: Restart network adapter to apply the changes
+  win_shell: Restart-NetAdapter -Name "Ethernet"
