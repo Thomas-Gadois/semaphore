@@ -67,7 +67,7 @@
     validate_certs: no
     name: "{{ vm_name }}"  # Nom de la VM cible
     state: present
-    iso_path: [] /usr/lib/vmware/isoimages/windows.iso  # Chemin vers l'ISO des VMware Tools
+    iso_path: [datastore 1] ISO/Win_Server_2019_Custom.iso  # Chemin vers l'ISO des VMware Tools
     controller_number: 1
     unit_number: 0
 
