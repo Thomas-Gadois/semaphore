@@ -25,8 +25,8 @@
       seconds: 5  # Temps d'attente pour que l'ISO soit monté
   
   - name: Install VMware Tools on the VM
-      ansible.builtin.win_command:
-        cmd: 'D:\setup.exe /S /v /qn REBOOT=R'
-      delegate_to: localhost
-      run_once: true
+    ansible.builtin.win_command:
+      cmd: 'D:\setup.exe /S /v /qn REBOOT=R'
+    delegate_to: localhost
+    run_once: true
 
