@@ -5,3 +5,4 @@
     - role: create_vm
       vars:
         name: "{{ vm_name }}"
+        hostname: "{{ esxi_hostname }}"
