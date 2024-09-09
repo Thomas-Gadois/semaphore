@@ -24,14 +24,9 @@
     pause:
       seconds: 5  # Temps d'attente pour que l'ISO soit monté
   
-  - name: Install VMware Tools silently on the VM
-    community.vmware.vmware_guest_tools:
-      hostname: "{{ esxi_hostname }}"
-      username: "{{ esxi_user }}"
-      password: "{{ esxi_pass }}"
-      validate_certs: no
-      vm_id: "{{ vm_name }}"
-      iso_mount: true
-      state: present
-      wait_for_completion: true
+  - name: Install VMware Tools on the VM
+      ansible.builtin.win_command:
+        cmd: 'D:\setup.exe /S /v /qn REBOOT=R'
+      delegate_to: localhost
+      run_once: true
 
