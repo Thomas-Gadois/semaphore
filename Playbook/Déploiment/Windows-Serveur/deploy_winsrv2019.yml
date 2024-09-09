@@ -2,6 +2,6 @@
 - hosts: esxi
   gather_facts: no
   roles:
-    - create_vm
+    - role: create_vm
       vars:
         name: "{{ vm_name }}"
