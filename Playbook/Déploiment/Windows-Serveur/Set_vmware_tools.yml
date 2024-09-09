@@ -26,7 +26,7 @@
       seconds: 30  # Temps d'attente pour que l'ISO soit monté
   
   - name: Run VMware Tools installation on Windows VM
-    win_shell: |
+    win_powershell: |
       Start-Process -Wait -FilePath "D:\setup64.exe" -ArgumentList "/S /v /qn REBOOT=R"
     register: vmware_tools_install
   
