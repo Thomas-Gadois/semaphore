@@ -6,3 +6,4 @@
       vars:
         name: "{{ vm_name }}"
         hostname: "{{ esxi_hostname }}"
+        datastore: "{{ datastore_name }}"
