@@ -1,0 +1,33 @@
+---
+- name: Mount VMware Tools ISO and install on Windows VM
+  hosts: esxi
+  gather_facts: no
+  tasks:
+  
+  - name: Attach VMware Tools ISO to the VM
+    community.vmware.vmware_guest_cdrom:
+      hostname: "{{ esxi_hostname }}"
+      username: "{{ esxi_user }}"
+      password: "{{ esxi_pass }}"
+      validate_certs: no
+      name: "{{ vm_name }}"  # Nom de la VM cible
+      state: present
+      iso_path: '[] /usr/lib/vmware/isoimages/windows.iso'
+      controller_number: 1
+      unit_number: 0
+  
+  - name: Wait for VM to mount ISO
+    pause:
+      seconds: 30  # Temps d'attente pour que l'ISO soit monté
+  
+  - name: Run VMware Tools installation on Windows VM
+    win_shell: |
+      Start-Process -Wait -FilePath "D:\\setup.exe" -ArgumentList "/S /v /qn REBOOT=R"
+    args:
+      executable: cmd
+    register: vmware_tools_install
+
+  - name: Reboot VM after VMware Tools installation (if necessary)
+    win_reboot:
+      msg: "Rebooting after VMware Tools installation"
+      pre_reboot_delay: 30
