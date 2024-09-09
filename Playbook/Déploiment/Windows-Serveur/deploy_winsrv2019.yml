@@ -7,4 +7,6 @@
         name: "{{ vm_name }}"
         hostname: "{{ esxi_hostname }}"
         datastore: "{{ datastore_name }}"
+        hostname: "{{ vm_hostname }}"
+        password: "{{ vm_pwd }}"
         ip: "{{ vm_ip }}"
