@@ -37,8 +37,6 @@
         netmask: 255.255.255.0
         gateway: 192.168.25.254
         dns_servers: 8.8.8.8
-    wait_for_customization: true
-    wait_for_customization_timeout: 3600
     customization:
       autologon: true
       autologoncount: 1    
