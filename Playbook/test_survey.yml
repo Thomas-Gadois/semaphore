@@ -1,0 +1,20 @@
+---
+- name: Test des survey variables dans Ansible Semaphore
+  hosts: localhost
+  vars:
+    message: "{{ survey_message }}"
+    filename: "{{ survey_filename }}"
+  tasks:
+    - name: Afficher le message fourni par l'utilisateur
+      debug:
+        msg: "Le message fourni est : {{ message }}"
+
+    - name: Créer un fichier avec le nom fourni
+      file:
+        path: "/tmp/{{ filename }}"
+        state: touch
+
+    - name: Ajouter le message dans le fichier
+      lineinfile:
+        path: "/tmp/{{ filename }}"
+        line: "{{ message }}"
