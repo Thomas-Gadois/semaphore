@@ -4,4 +4,4 @@
   roles:
     - create_vm
       vars:
-      name: "{{ vm_name }}"
+        name: "{{ vm_name }}"
