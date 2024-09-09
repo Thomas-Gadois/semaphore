@@ -26,6 +26,6 @@
       seconds: 15  # Temps d'attente pour que l'ISO soit monté
   
   - name: Run basic PowerShell script
-  ansible.windows.win_powershell:
-    script: |
-      Start-Process -Wait -FilePath "D:\setup64.exe" -ArgumentList "/S /v /qn REBOOT=R"
+    ansible.windows.win_powershell:
+      script: |
+        Start-Process -Wait -FilePath "D:\setup64.exe" -ArgumentList "/S /v /qn REBOOT=R"
