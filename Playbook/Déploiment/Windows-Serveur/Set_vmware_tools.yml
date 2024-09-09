@@ -25,6 +25,5 @@
     pause:
       seconds: 5  # Temps d'attente pour que l'ISO soit monté
   
-  - name: Run VMware Tools installation using win_shell
-    win_powershell: |
-        Start-Process -Wait -FilePath "D:\setup64.exe" -ArgumentList "/S /v /qn REBOOT=R"
+  - name: Run VMware Tools installation using win_command
+    win_command: "D:\setup64.exe" -ArgumentList "/S /v /qn REBOOT=R"
