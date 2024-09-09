@@ -28,8 +28,6 @@
   - name: Run VMware Tools installation on Windows VM
     win_shell: |
       Start-Process -Wait -FilePath "D:\setup64.exe" -ArgumentList "/S /v /qn REBOOT=R"
-    args:
-      executable: cmd
     register: vmware_tools_install
   
   - name: Reboot VM after VMware Tools installation (if necessary)
