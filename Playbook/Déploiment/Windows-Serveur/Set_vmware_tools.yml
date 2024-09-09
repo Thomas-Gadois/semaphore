@@ -1,32 +1,15 @@
 ---
-- name: Mount VMware Tools ISO and install on Windows VM
-  hosts: esxi
+- hosts: esxi
   gather_facts: no
   tasks:
-  
-  - name: Attach VMware Tools ISO to the VM
-    community.vmware.vmware_guest:
-      hostname: "{{ esxi_hostname }}"
-      username: "{{ esxi_user }}"
-      password: "{{ esxi_pass }}"
-      datastore: "{{ datastore_name }}"
-      folder: "/"
-      name: "{{ vm_name }}"
-      cdrom:
-        - controller_number: 1
-          unit_number: 0
-          state: present
-          type: iso
-          iso_path: '[] /usr/lib/vmware/isoimages/windows.iso'
-      validate_certs: no
-    
-  - name: Wait for VM to mount ISO
-    pause:
-      seconds: 5  # Temps d'attente pour que l'ISO soit monté
-  
-  - name: Install VMware Tools on the VM
-    ansible.builtin.win_command:
-      cmd: 'D:\setup.exe /S /v /qn REBOOT=R'
-    delegate_to: localhost
-    run_once: true
-
+    - name: Install VMware Tools via Guest Operations
+      community.vmware.vmware_guest_tools:
+        hostname: "{{ esxi_hostname }}"
+        username: "{{ esxi_user }}"
+        password: "{{ esxi_pass }}"
+        validate_certs: no
+        name: "{{ vm_name }}"
+        command: |
+          Start-Process -Wait -FilePath "D:\setup64.exe" -ArgumentList "/S /v /qn REBOOT=R"
+        timeout: 300  # Temps d'attente pour l'exécution de la commande
+      delegate_to: localhost
