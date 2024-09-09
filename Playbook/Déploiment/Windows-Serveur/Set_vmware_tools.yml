@@ -23,14 +23,9 @@
     
   - name: Wait for VM to mount ISO
     pause:
-      seconds: 30  # Temps d'attente pour que l'ISO soit monté
+      seconds: 15  # Temps d'attente pour que l'ISO soit monté
   
-  - name: Run VMware Tools installation on Windows VM
-    win_powershell: |
+  - name: Run basic PowerShell script
+  ansible.windows.win_powershell:
+    script: |
       Start-Process -Wait -FilePath "D:\setup64.exe" -ArgumentList "/S /v /qn REBOOT=R"
-    register: vmware_tools_install
-  
-  - name: Reboot VM after VMware Tools installation (if necessary)
-    win_reboot:
-      msg: "Rebooting after VMware Tools installation"
-      pre_reboot_delay: 30
