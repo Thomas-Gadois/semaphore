@@ -39,7 +39,9 @@
         dns_servers: 8.8.8.8
     customization:
       autologon: true
-      autologoncount: 1
+      autologoncount: 1    
+      hostname: "{{ vm_hostname }}"
+      password: "{{ vm_pwd }}"
     wait_for_ip_address: no
   delegate_to: localhost
 
