@@ -3,7 +3,7 @@
   gather_facts: no
   roles:
     - role: create_vm
-      vars:
+      vars: #Variables pour Survey Variables de Semaphore
         name: "{{ vm_name }}"
         hostname: "{{ esxi_hostname }}"
         datastore: "{{ datastore_name }}"
