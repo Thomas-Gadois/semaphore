@@ -23,7 +23,7 @@
     
   - name: Wait for VM to mount ISO
     pause:
-      seconds: 15  # Temps d'attente pour que l'ISO soit monté
+      seconds: 5  # Temps d'attente pour que l'ISO soit monté
   
   - name: Run VMware Tools installation using win_shell
     ansible.windows.win_shell: |
