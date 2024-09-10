@@ -1,15 +1,20 @@
 ---
-- hosts: esxi
-  gather_facts: no
-  tasks:
-    - name: Install VMware Tools via Guest Operations
-      community.vmware.vmware_guest_tools:
-        hostname: "{{ esxi_hostname }}"
-        username: "{{ esxi_user }}"
-        password: "{{ esxi_pass }}"
-        validate_certs: no
-        name: "{{ vm_name }}"
-        command: |
-          Start-Process -Wait -FilePath "D:\setup64.exe" -ArgumentList "/S /v /qn REBOOT=R"
-        timeout: 300  # Temps d'attente pour l'exécution de la commande
-      delegate_to: localhost
+- name: Create a new virtual machine (powered off)
+  community.vmware.vmware_guest:
+    hostname: "{{ esxi_hostname }}"
+    username: "{{ esxi_user }}"
+    password: "{{ esxi_pass }}"
+    datastore: "{{ datastore_name }}"
+    folder: "/"
+    validate_certs: no
+    name: "{{ vm_name }}"
+    networks:
+      - name: LAN
+        type: static
+        device_type: e1000e
+        ip: "{{ vm_ip }}"
+        netmask: 255.255.255.0
+        gateway: 192.168.25.254
+        dns_servers: 8.8.8.8
+    wait_for_ip_address: no
+  delegate_to: localhost
