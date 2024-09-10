@@ -58,39 +58,3 @@
   pause:
     seconds: 300  # Ajuster selon le temps nécessaire
 
-
-- name: Attach VMware Tools ISO to the VM
-  community.vmware.vmware_guest:
-    hostname: "{{ esxi_hostname }}"
-    username: "{{ esxi_user }}"
-    password: "{{ esxi_pass }}"
-    datastore: "{{ datastore_name }}"
-    folder: "/"
-    name: "{{ vm_name }}"
-    cdrom:
-      - controller_number: 1
-        unit_number: 0
-        state: present
-        type: iso
-        iso_path: '[] /usr/lib/vmware/isoimages/windows.iso'
-    validate_certs: no
-  delegate_to: localhost
-
-# Pause pour laisser le temps d'installation des VMware Tools
-- name: Wait for VMware Tools to be installed
-  pause:
-    seconds: 20  # Ajuster selon le temps nécessaire
-
-- name: Attach VMware Tools ISO to the VM
-  community.vmware.vmware_guest:
-    hostname: "{{ esxi_hostname }}"
-    username: "{{ esxi_user }}"
-    password: "{{ esxi_pass }}"
-    datastore: "{{ datastore_name }}"
-    folder: "/"
-    name: "{{ vm_name }}"
-    customization:
-      runonce:
-      - powershell.exe Start-Process -Wait -FilePath "D:\setup64.exe" -ArgumentList "/S /v /qn REBOOT=R"
-    validate_certs: no
-  delegate_to: localhost
