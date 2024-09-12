@@ -33,10 +33,6 @@
       - name: LAN
         type: static
         device_type: e1000e
-        ip: "{{ vm_ip }}"
-        netmask: 255.255.255.0
-        gateway: 192.168.25.254
-        dns_servers: 8.8.8.8
     wait_for_ip_address: no
   delegate_to: localhost
 
