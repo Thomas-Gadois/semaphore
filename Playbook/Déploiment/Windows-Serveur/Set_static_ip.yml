@@ -4,8 +4,9 @@
   tasks:
     - name: Set static IP address on Windows VM via WinRM
       win_shell: |
-        Set-NetIPAddress -InterfaceAlias "Ethernet0" -IPAddress "192.168.25.12" -PrefixLength 24 /force
-        Set-DnsClientServerAddress -InterfaceAlias "Ethernet0" -ServerAddresses ("192.168.25.101","8.8.8.8")
+        Get-NetIPAddress -InterfaceIndex 3 | Remove-NetIPAddress 
+        New-NetIPAddress -InterfaceIndex 3 -IPAddress {{ vm_ip }} -PrefixLength 24 -DefaultGateway '192.168.25.254'
+        Set-DnsClientServerAddress -InterfaceIndex 3 -ServerAddresses ("192.168.25.101","8.8.8.8")
       vars:
         ansible_host: "{{ default_ip }}"
         ansible_user: "{{ vm_user }}"
