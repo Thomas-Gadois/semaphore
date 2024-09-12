@@ -2,29 +2,12 @@
 - hosts: esxi
   gather_facts: no
   tasks:
-    - name: Get the IP address of the VM via VMware Tools
-      community.vmware.vmware_guest_info:
-        hostname: "{{ esxi_hostname }}"
-        username: "{{ esxi_user }}"
-        password: "{{ esxi_pass }}"
-        name: "{{ vm_name }}"
-        validate_certs: no
-      register: vm_info
-
-    - name: Set the IP address as a variable
-      set_fact:
-        vm_ip: "{{ vm_info.instance_guest_ip_address }}"
-    
-    - name: Wait for VM to be fully ready
-      pause:
-        seconds: 30
-    
     - name: Set static IP address on Windows VM via WinRM
       win_shell: |
-        New-NetIPAddress -InterfaceAlias "Ethernet" -IPAddress {{ static_ip }} -PrefixLength 24 -DefaultGateway 192.168.25.254
-        Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses 8.8.8.8
+        New-NetIPAddress -InterfaceAlias "Ethernet0" -IPAddress {{ vm_ip }} -PrefixLength 24 -DefaultGateway 192.168.25.254
+        Set-DnsClientServerAddress -InterfaceAlias "Ethernet0" -ServerAddresses 192.168.25.101
       vars:
-        ansible_host: "{{ vm_ip }}"
+        ansible_host: "{{ default_ip }}"
         ansible_user: Administrator
         ansible_password: YourPassword
         ansible_connection: winrm
