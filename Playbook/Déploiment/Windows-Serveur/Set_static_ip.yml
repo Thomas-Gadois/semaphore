@@ -7,7 +7,7 @@
         $NetIndex = (Get-NetIPAddress -InterfaceAlias "Ethernet*").InterfaceIndex
         New-NetIPAddress -InterfaceIndex $NetIndex -IPAddress {{ vm_ip }} -PrefixLength 24 #-DefaultGateway '192.168.25.254'
         Set-DnsClientServerAddress -InterfaceIndex $NetIndex -ServerAddresses ("192.168.25.101","8.8.8.8")
-        Remove-NetIPAddress -InterfaceIndex $NetIndex -IPAddress {{ default_ip }} -PrefixLength 24 -Force
+        Remove-NetIPAddress -InterfaceIndex $NetIndex -IPAddress {{ default_ip }} -PrefixLength 24 -Confirm:$false
       vars:
         ansible_host: "{{ default_ip }}"
         ansible_user: "{{ vm_user }}"
