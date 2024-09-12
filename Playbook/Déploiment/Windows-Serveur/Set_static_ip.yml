@@ -7,6 +7,9 @@
         function Set-NewIPAddress {
         $NetIndex = (Get-NetIPAddress -InterfaceAlias "Ethernet*").InterfaceIndex
         (Get-NetIPAddress -InterfaceIndex $NetIndex) | Remove-NetIPAddress -Force
+
+        Start-Sleep -Seconds 30
+        
         New-NetIPAddress -InterfaceIndex $NetIndex -IPAddress {{ vm_ip }} -PrefixLength 24 -DefaultGateway '192.168.25.254'
         Set-DnsClientServerAddress -InterfaceIndex $NetIndex -ServerAddresses ("192.168.25.101","8.8.8.8")
         }
