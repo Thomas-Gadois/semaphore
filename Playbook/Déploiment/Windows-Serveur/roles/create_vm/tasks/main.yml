@@ -52,5 +52,5 @@
 # Pause pour laisser le temps d'installation des VMware Tools
 - name: Wait for VMware Tools to be installed
   pause:
-    seconds: 420  # Ajuster selon le temps nécessaire
+    seconds: 480  # Ajuster selon le temps nécessaire
 
