@@ -64,7 +64,7 @@
     Set-DnsClientServerAddress -InterfaceAlias "Ethernet0" -ServerAddresses "192.168.25.101;8.8.8.8"
   vars:
     ansible_host: "{{ default_ip }}"
-    ansible_user: "{{ vm_hostname }}"
+    ansible_user: "{{ vm_user }}"
     ansible_password: "{{ vm_pwd }}"
     ansible_connection: winrm
     ansible_winrm_transport: ntlm
