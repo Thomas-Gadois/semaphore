@@ -4,16 +4,10 @@
   tasks:
     - name: Set static IP address on Windows VM via WinRM
       win_shell: |
-        function Set-NewIPAddress {
         $NetIndex = (Get-NetIPAddress -InterfaceAlias "Ethernet*").InterfaceIndex
-        (Get-NetIPAddress -InterfaceIndex $NetIndex) | Remove-NetIPAddress -Force
-
-        Start-Sleep -Seconds 30
-        
+        (Get-NetIPAddress -InterfaceIndex $NetIndex) #| Remove-NetIPAddress -Force
         New-NetIPAddress -InterfaceIndex $NetIndex -IPAddress {{ vm_ip }} -PrefixLength 24 -DefaultGateway '192.168.25.254'
         Set-DnsClientServerAddress -InterfaceIndex $NetIndex -ServerAddresses ("192.168.25.101","8.8.8.8")
-        }
-        Set-NewIPAddress
       vars:
         ansible_host: "{{ default_ip }}"
         ansible_user: "{{ vm_user }}"
