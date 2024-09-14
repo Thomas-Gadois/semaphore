@@ -2,7 +2,7 @@
 - hosts: esxi
   gather_facts: no
   roles:
-    - role: create_vm
+    - role: create_vm_winsrv2019
       vars: #Variables pour Survey Variables de Semaphore
         name: "{{ vm_name }}"
         hostname: "{{ esxi_hostname }}"
