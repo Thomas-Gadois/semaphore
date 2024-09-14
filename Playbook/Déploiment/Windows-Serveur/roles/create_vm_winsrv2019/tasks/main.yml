@@ -1,0 +1,70 @@
+---
+# Tâche pour créer la VM mais en état éteinte
+- name: Create a new virtual machine (powered off)
+  community.vmware.vmware_guest:
+    hostname: "{{ esxi_hostname }}"
+    username: "{{ esxi_user }}"
+    password: "{{ esxi_pass }}"
+    datastore: "{{ datastore_name }}"
+    folder: "/"
+    validate_certs: no
+    name: "{{ vm_name }}"
+    guest_id: windows9Server64Guest
+    state: powered-on  # Créer la VM mais la laisser éteinte
+    hardware:
+      boot_firmware: efi
+      num_cpus: 2
+      memory_mb: 4096
+      scsi: paravirtual
+    cdrom:
+      - controller_number: 1
+        unit_number: 0
+        state: present
+        type: iso
+        iso_path: "{{ iso_path }}"
+    disk:
+      - size_gb: 40
+        type: thin
+        datastore: "{{ datastore_name }}"
+        controller_type: 'nvme'
+        controller_number: 0
+        unit_number: 0
+    networks:
+      - name: LAN
+        type: static
+        device_type: e1000e
+    wait_for_ip_address: no
+  delegate_to: localhost
+
+# Ajouter un contrôleur USB à la VM
+- name: Add USB controller to VM
+  community.vmware.vmware_guest_controller:
+    hostname: "{{ esxi_hostname }}"
+    username: "{{ esxi_user }}"
+    password: "{{ esxi_pass }}"
+    name: "{{ vm_name }}"
+    controllers:
+      - state: present
+        type: usb3
+    validate_certs: no
+  delegate_to: localhost
+
+# Pause pour laisser le temps d'installation des VMware Tools
+- name: Wait for VMware Tools to be installed
+  pause:
+    seconds: 480  # Ajuster selon le temps nécessaire
+
+- name: Set static IP address on Windows VM via WinRM
+  win_shell: |
+    New-NetIPAddress -InterfaceAlias "Ethernet0" -IPAddress {{ vm_ip }} -PrefixLength 24 #-DefaultGateway '192.168.25.254'
+    Set-DnsClientServerAddress -InterfaceAlias "Ethernet0" -ServerAddresses ("192.168.25.101","8.8.8.8")
+    Remove-NetIPAddress -InterfaceAlias "Ethernet0" -IPAddress {{ default_ip }} -PrefixLength 24 -Confirm:$false
+  vars:
+    ansible_host: "{{ default_ip }}"
+    ansible_user: "{{ vm_user }}"
+    ansible_password: "{{ vm_pwd }}"
+    ansible_connection: winrm
+    ansible_winrm_transport: ntlm
+    ansible_winrm_server_cert_validation: ignore
+  ignore_errors: yes
+  
