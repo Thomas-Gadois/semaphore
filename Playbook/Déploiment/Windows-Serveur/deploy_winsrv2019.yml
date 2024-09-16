@@ -3,10 +3,18 @@
   gather_facts: no
   roles:
     - role: create_vm_winsrv2019
-      vars: #Variables pour Survey Variables de Semaphore
+      vars: 
+        # Variables pour Survey Variables de Semaphore
         name: "{{ vm_name }}"
         hostname: "{{ esxi_hostname }}"
         datastore: "{{ datastore_name }}"
         hostname: "{{ vm_hostname }}"
         password: "{{ vm_pwd }}"
         ip: "{{ vm_ip }}"
+        # Variables pour winrm
+        ansible_host: "{{ default_ip }}"
+        ansible_user: "{{ vm_user }}"
+        ansible_password: "{{ vm_pwd }}"
+        ansible_connection: winrm
+        ansible_winrm_transport: ntlm
+        ansible_winrm_server_cert_validation: ignore
