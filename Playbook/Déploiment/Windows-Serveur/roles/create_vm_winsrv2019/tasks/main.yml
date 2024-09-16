@@ -71,7 +71,8 @@
 
 - name: Set hostname on Windows VM via WinRM
   win_shell: |
-    if (hostname -ne "{{ vm_name }}" {
+    $hostname = hostname
+    if ($hostname -ne "{{ vm_name }}" {
     Rename-Computer -NewName "{{ vm_name }}" -Force
     #Restart-Computer
     }
