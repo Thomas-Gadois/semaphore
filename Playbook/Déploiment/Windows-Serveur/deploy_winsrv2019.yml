@@ -11,10 +11,4 @@
         hostname: "{{ vm_hostname }}"
         password: "{{ vm_pwd }}"
         ip: "{{ vm_ip }}"
-        # Variables pour winrm
-        ansible_host: "{{ default_ip }}"
-        ansible_user: "{{ vm_user }}"
-        ansible_password: "{{ vm_pwd }}"
-        ansible_connection: winrm
-        ansible_winrm_transport: ntlm
-        ansible_winrm_server_cert_validation: ignore
+        
