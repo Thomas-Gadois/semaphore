@@ -13,68 +13,68 @@
 
   tasks:
     - name: Create VM
-        community.vmware.vmware_guest:
-	  hostname: "{{ esxi_hostname }}"
-	  username: "{{ esxi_user }}"
-	  password: "{{ esxi_pass }}"
-          datastore: "{{ datastore_name }}"
-            folder: "/"
-            validate_certs: no
-            name: "ubuntu-22-04"
-            guest_id: ubuntu64Guest
-            state: powered-on  # Créer la VM mais la laisser éteinte
-            hardware:
-            boot_firmware: efi
-              num_cpus: 2
-              memory_mb: 4096
-              scsi: paravirtual
-            cdrom:
-              - controller_number: 1
-	        unit_number: 0
-	        state: present
-	        type: iso
-	        iso_path: "{{ iso_path }}"
-	    disk:
-	      - size_gb: 20
-                type: thin
-	        datastore: "{{ datastore_name }}"
-	        controller_type: 'nvme'
-	        controller_number: 0
-	        unit_number: 0
-	    networks:
-	      - name: LAN
-                type: static
-	        device_type: e1000e
-	     wait_for_ip_address: no
-	  delegate_to: localhost
-        customization:
-          boot_options:
-            boot_delay: 5000
-            enter_bios_setup: true
-            boot_firmware: efi
-            boot_order:
-              - cdrom
-              - disk
-        boot_firmware: efi
-        boot_params: >
-          auto=true priority=critical
-          url={{ preseed_url }}
-          debian-installer/locale=en_US
-          keyboard-configuration/layoutcode=fr
-          netcfg/choose_interface=auto
-          {% if ip_allocation_policy == 'dynamic' %}
-          netcfg/disable_autoconfig=false
-          netcfg/dhcp_timeout=60
-          netcfg/get_hostname=ubuntu-{{ vm_name }}
-          {% else %}
-          netcfg/disable_autoconfig=true
-          netcfg/get_ipaddress={{ static_ip }}
-          netcfg/get_netmask={{ netmask }}
-          netcfg/get_gateway={{ gateway }}
-          netcfg/get_nameservers={{ dns_servers }}
-          netcfg/confirm_static=true
-          {% endif %}
-      register: deploy_vm
+      community.vmware.vmware_guest:
+        hostname: "{{ esxi_hostname }}"
+        username: "{{ esxi_user }}"
+        password: "{{ esxi_pass }}"
+        datastore: "{{ datastore_name }}"
+        folder: "/"
+        validate_certs: no
+        name: "ubuntu-22-04"
+        guest_id: ubuntu64Guest
+        state: powered-on  # Créer la VM mais la laisser éteinte
+        hardware:
+          boot_firmware: efi
+          num_cpus: 2
+          memory_mb: 4096
+          scsi: paravirtual
+        cdrom:
+          - controller_number: 1
+            unit_number: 0
+            state: present
+            type: iso
+            iso_path: "{{ iso_path }}"
+        disk:
+          - size_gb: 20
+            type: thin
+            datastore: "{{ datastore_name }}"
+            controller_type: 'nvme'
+            controller_number: 0
+            unit_number: 0
+        networks:
+          - name: LAN
+            type: static
+            device_type: e1000e
+        wait_for_ip_address: no
+      delegate_to: localhost
+      customization:
+        boot_options:
+          boot_delay: 5000
+          enter_bios_setup: true
+          boot_firmware: efi
+          boot_order:
+            - cdrom
+            - disk
+      boot_firmware: efi
+      boot_params: >
+        auto=true priority=critical
+        url={{ preseed_url }}
+        debian-installer/locale=en_US
+        keyboard-configuration/layoutcode=fr
+        netcfg/choose_interface=auto
+        {% if ip_allocation_policy == 'dynamic' %}
+        netcfg/disable_autoconfig=false
+        netcfg/dhcp_timeout=60
+        netcfg/get_hostname=ubuntu-{{ vm_name }}
+        {% else %}
+        netcfg/disable_autoconfig=true
+        netcfg/get_ipaddress={{ static_ip }}
+        netcfg/get_netmask={{ netmask }}
+        netcfg/get_gateway={{ gateway }}
+        netcfg/get_nameservers={{ dns_servers }}
+        netcfg/confirm_static=true
+        {% endif %}
+    register: deploy_vm
 
     - name: Display VM IP
       debug:
@@ -119,5 +119,5 @@
         state: enabled
 
     - name: Set timezone
-        timezone:
-          name: Europe/Paris
+      timezone:
+        name: Europe/Paris
