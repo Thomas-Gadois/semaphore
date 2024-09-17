@@ -56,7 +56,7 @@
             - cdrom
             - disk
       boot_firmware: efi
-      boot_params: >
+      boot_params: |
         auto=true priority=critical
         url={{ preseed_url }}
         debian-installer/locale=en_US
