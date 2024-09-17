@@ -4,10 +4,13 @@
   gather_facts: no
   vars:
     preseed_url: "http://your_web_server/ubuntu-preseed.cfg"
+    ip_allocation_policy: "static"  # Can be 'dynamic' or 'static'
     static_ip: "192.168.25.10"  # Défini dynamiquement ou via une variable d'inventaire
     netmask: "255.255.255.0"
-    gateway: "192.168.1.1"
+    gateway: "192.168.25.1"  # Assurez-vous que c'est la bonne passerelle pour votre réseau
     dns_servers: "8.8.8.8 8.8.4.4"
+    vm_name: "ubuntu-22-04"
+    iso_path: "[datastore1] ISO/ubuntu-22.04-live-server-amd64.iso"  # Ajustez selon votre environnement
 
   tasks:
     - name: Create VM
@@ -18,16 +21,16 @@
         datastore: "{{ datastore_name }}"
         folder: "/"
         validate_certs: no
-        name: "ubuntu-22-04"
+        name: "{{ vm_name }}"
         guest_id: ubuntu64Guest
-        state: powered-on  # Créer la VM mais la laisser éteinte
+        state: poweredon  # Changé à poweredon pour démarrer la VM après la création
         hardware:
           boot_firmware: efi
           num_cpus: 2
           memory_mb: 4096
           scsi: paravirtual
         cdrom:
-          - controller_number: 1
+          - controller_number: 0
             unit_number: 0
             state: present
             type: iso
@@ -36,43 +39,42 @@
           - size_gb: 20
             type: thin
             datastore: "{{ datastore_name }}"
-            controller_type: 'nvme'
-            controller_number: 0
+            controller_type: 'paravirtual'  # Changé à paravirtual pour la compatibilité
             unit_number: 0
         networks:
-          - name: LAN
-            type: static
-            device_type: e1000e
-        wait_for_ip_address: no
-      delegate_to: localhost
-      customization:
+          - name: "{{ vm_network }}"  # Utilisez une variable pour le nom du réseau
+            device_type: vmxnet3  # Changé à vmxnet3 pour de meilleures performances
+        wait_for_ip_address: yes  # Changé à yes pour attendre l'IP
+        customization:
+          dns_servers: "{{ dns_servers.split() }}"
         boot_options:
           boot_delay: 5000
-          enter_bios_setup: true
+          enter_bios_setup: false
           boot_firmware: efi
           boot_order:
             - cdrom
             - disk
-      boot_firmware: efi
-      boot_params: >
-        auto=true priority=critical
-        url={{ preseed_url }}
-        debian-installer/locale=en_US
-        keyboard-configuration/layoutcode=fr
-        netcfg/choose_interface=auto
-        {% if ip_allocation_policy == 'dynamic' %}
-        netcfg/disable_autoconfig=false
-        netcfg/dhcp_timeout=60
-        netcfg/get_hostname=ubuntu-{{ vm_name }}
-        {% else %}
-        netcfg/disable_autoconfig=true
-        netcfg/get_ipaddress={{ static_ip }}
-        netcfg/get_netmask={{ netmask }}
-        netcfg/get_gateway={{ gateway }}
-        netcfg/get_nameservers={{ dns_servers }}
-        netcfg/confirm_static=true
-        {% endif %}
-    register: deploy_vm
+        boot_firmware: efi
+        boot_params: >
+          auto=true priority=critical
+          url={{ preseed_url }}
+          debian-installer/locale=en_US
+          keyboard-configuration/layoutcode=fr
+          netcfg/choose_interface=auto
+          {% if ip_allocation_policy == 'dynamic' %}
+          netcfg/disable_autoconfig=false
+          netcfg/dhcp_timeout=60
+          netcfg/get_hostname={{ vm_name }}
+          {% else %}
+          netcfg/disable_autoconfig=true
+          netcfg/get_ipaddress={{ static_ip }}
+          netcfg/get_netmask={{ netmask }}
+          netcfg/get_gateway={{ gateway }}
+          netcfg/get_nameservers={{ dns_servers }}
+          netcfg/confirm_static=true
+          {% endif %}
+      delegate_to: localhost
+      register: deploy_vm
 
     - name: Display VM IP
       debug:
@@ -84,6 +86,7 @@
         port: 22
         delay: 10
         timeout: 300
+      delegate_to: localhost
 
 - name: Configure Ubuntu server
   hosts: "{{ hostvars['localhost']['deploy_vm']['instance']['ipv4'] }}"
