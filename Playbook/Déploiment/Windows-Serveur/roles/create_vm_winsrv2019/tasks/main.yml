@@ -74,7 +74,7 @@
     $hostname = hostname
     if ($hostname -ne "{{ vm_name }}") {
     Rename-Computer -NewName "{{ vm_name }}" -Force
-    Restart-Computer
+    Restart-Computer -Force
     }
   vars:
     # Variables pour winrm
