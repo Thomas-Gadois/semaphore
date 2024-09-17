@@ -55,24 +55,6 @@
             - cdrom
             - disk
         boot_firmware: efi
-        boot_params: >
-          auto=true priority=critical
-          url={{ preseed_url }}
-          debian-installer/locale=en_US
-          keyboard-configuration/layoutcode=fr
-          netcfg/choose_interface=auto
-          {% if ip_allocation_policy == 'dynamic' %}
-          netcfg/disable_autoconfig=false
-          netcfg/dhcp_timeout=60
-          netcfg/get_hostname={{ vm_name }}
-          {% else %}
-          netcfg/disable_autoconfig=true
-          netcfg/get_ipaddress={{ static_ip }}
-          netcfg/get_netmask={{ netmask }}
-          netcfg/get_gateway={{ gateway }}
-          netcfg/get_nameservers={{ dns_servers }}
-          netcfg/confirm_static=true
-          {% endif %}
       delegate_to: localhost
       register: deploy_vm
 
