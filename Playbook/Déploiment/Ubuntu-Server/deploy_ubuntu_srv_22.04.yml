@@ -23,7 +23,7 @@
         validate_certs: no
         name: "{{ vm_name }}"
         guest_id: ubuntu64Guest
-        state: poweredon  # Changé à poweredon pour démarrer la VM après la création
+        state: poweredon
         hardware:
           boot_firmware: efi
           num_cpus: 2
@@ -39,124 +39,15 @@
           - size_gb: 20
             type: thin
             datastore: "{{ datastore_name }}"
-            controller_type: 'paravirtual'  # Changé à paravirtual pour la compatibilité
+            controller_type: 'paravirtual'
             unit_number: 0
         networks:
-          - name: LAN  # Utilisez une variable pour le nom du réseau
-            device_type: e1000e  # Changé à vmxnet3 pour de meilleures performances
-        wait_for_ip_address: yes  # Changé à yes pour attendre l'IP
- les tâches qui doivent s'exécuter sur la machine de contrôle Ansible.
-J'ai corrigé la passerelle dans les variables pour correspondre au réseau de l'IP statique (192.168.25.1 au lieu de 192.168.1.1).
-Pour utiliser ce playbook, vous devrez définir les variables suivantes dans votre inventaire ou les passer en ligne de commande :
-
-esxi_hostname
-esxi_user
-esxi_pass
-datastore_name
-vm_network
-Vous pouvez également ajuster les autres variables selon vos besoins.
-
-Pour exécuter ce playbook avec une IP statique spécifique, vous pouvez utiliser la commande :
-
-
-Copy
-ansible-playbook -i your_inventory esxi_ubuntu_deploy.yml -e "static_ip=192.168.25.15"
-N'oubliez pas d'ajuster le fichier de préconfiguration (preseed) pour qu'il corresponde à ces paramètres, en particulier pour la configuration réseau.
-
-Avez-vous des questions sur ces modifications ou souhaitez-vous des ajustements supplémentaires ?
-
-Copy
-Retry
-
-
-Claude can make mistakes. Please double-check responses.
-
-
-
-Aucun fichier choisi
-
-
-3.5 Sonnet
-You are out of free messages until 1 AM
-Subscribe to Pro
-
-Playbook Ansible pour le déploiement d'Ubuntu sur ESXi
-
----
-- name: Deploy Ubuntu 22.04 on ESXi with dynamic or static IP allocation
-  hosts: esxi
-  gather_facts: no
-  vars:
-    preseed_url: "http://your_web_server/ubuntu-preseed.cfg"
-    ip_allocation_policy: "static"  # Can be 'dynamic' or 'static'
-    static_ip: "192.168.25.10"  # Défini dynamiquement ou via une variable d'inventaire
-    netmask: "255.255.255.0"
-    gateway: "192.168.25.1"  # Assurez-vous que c'est la bonne passerelle pour votre réseau
-    dns_servers: "8.8.8.8 8.8.4.4"
-    vm_name: "ubuntu-22-04"
-    iso_path: "[datastore1] ISO/ubuntu-22.04-live-server-amd64.iso"  # Ajustez selon votre environnement
-
-  tasks:
-    - name: Create VM
-      community.vmware.vmware_guest:
-        hostname: "{{ esxi_hostname }}"
-        username: "{{ esxi_user }}"
-        password: "{{ esxi_pass }}"
-        datastore: "{{ datastore_name }}"
-        folder: "/"
-        validate_certs: no
-        name: "{{ vm_name }}"
-        guest_id: ubuntu64Guest
-        state: poweredon  # Changé à poweredon pour démarrer la VM après la création
-        hardware:
-          boot_firmware: efi
-          num_cpus: 2
-          memory_mb: 4096
-          scsi: paravirtual
-        cdrom:
-          - controller_number: 0
-            unit_number: 0
-            state: present
-            type: iso
-            iso_path: "{{ iso_path }}"
-        disk:
-          - size_gb: 20
-            type: thin
-            datastore: "{{ datastore_name }}"
-            controller_type: 'paravirtual'  # Changé à paravirtual pour la compatibilité
-            unit_number: 0
-        networks:
-          - name: "{{ vm_network }}"  # Utilisez une variable pour le nom du réseau
-            device_type: vmxnet3  # Changé à vmxnet3 pour de meilleures performances
-        wait_for_ip_address: yes  # Changé à yes pour attendre l'IP
+          - name: "{{ vm_network }}"
+            device_type: vmxnet3
+        wait_for_ip_address: yes
         customization:
           dns_servers: "{{ dns_servers.split() }}"
-        boot_options:
-          boot_delay: 5000
-          enter_bios_setup: false
-          boot_firmware: efi
-          boot_order:
-            - cdrom
-            - disk
-        boot_firmware: efi
-        boot_params: >
-          auto=true priority=critical
-          url={{ preseed_url }}
-          debian-installer/locale=en_US
-          keyboard-configuration/layoutcode=fr
-          netcfg/choose_interface=auto
-          {% if ip_allocation_policy == 'dynamic' %}
-          netcfg/disable_autoconfig=false
-          netcfg/dhcp_timeout=60
-          netcfg/get_hostname={{ vm_name }}
-          {% else %}
-          netcfg/disable_autoconfig=true
-          netcfg/get_ipaddress={{ static_ip }}
-          netcfg/get_netmask={{ netmask }}
-          netcfg/get_gateway={{ gateway }}
-          netcfg/get_nameservers={{ dns_servers }}
-          netcfg/confirm_static=true
-          {% endif %}
+
       delegate_to: localhost
       register: deploy_vm
 
