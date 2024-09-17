@@ -42,7 +42,7 @@
             controller_type: 'paravirtual'
             unit_number: 0
         networks:
-          - name: "{{ vm_network }}"
+          - name: LAN
             device_type: vmxnet3
         wait_for_ip_address: yes
         customization:
