@@ -1,0 +1,123 @@
+---
+- name: Deploy Ubuntu 22.04 on ESXi with dynamic or static IP allocation
+  hosts: esxi
+  gather_facts: no
+  vars:
+    iso_path: "[datastore 1] ISO/ubuntu-22.04-live-server-amd64.iso"
+    preseed_url: "http://your_web_server/ubuntu-preseed.cfg"
+    ip_allocation_policy: "static"  # Can be 'dynamic' or 'static'
+    static_ip: "192.168.25.10"  # Défini dynamiquement ou via une variable d'inventaire
+    netmask: "255.255.255.0"
+    gateway: "192.168.1.1"
+    dns_servers: "8.8.8.8 8.8.4.4"
+
+  tasks:
+    - name: Create VM
+        community.vmware.vmware_guest:
+			    hostname: "{{ esxi_hostname }}"
+			    username: "{{ esxi_user }}"
+			    password: "{{ esxi_pass }}"
+			    datastore: "{{ datastore_name }}"
+			    folder: "/"
+			    validate_certs: no
+			    name: "ubuntu-22-04"
+			    guest_id: ubuntu64Guest
+			    state: powered-on  # Créer la VM mais la laisser éteinte
+			    hardware:
+			      boot_firmware: efi
+			      num_cpus: 2
+			      memory_mb: 4096
+			      scsi: paravirtual
+			    cdrom:
+			      - controller_number: 1
+			        unit_number: 0
+			        state: present
+			        type: iso
+			        iso_path: "{{ iso_path }}"
+			    disk:
+			      - size_gb: 20
+			        type: thin
+			        datastore: "{{ datastore_name }}"
+			        controller_type: 'nvme'
+			        controller_number: 0
+			        unit_number: 0
+			    networks:
+			      - name: LAN
+			        type: static
+			        device_type: e1000e
+			    wait_for_ip_address: no
+			  delegate_to: localhost
+        customization:
+          boot_options:
+            boot_delay: 5000
+            enter_bios_setup: true
+            boot_firmware: efi
+            boot_order:
+              - cdrom
+              - disk
+        boot_firmware: efi
+        boot_params: >
+          auto=true priority=critical
+          url={{ preseed_url }}
+          debian-installer/locale=en_US
+          keyboard-configuration/layoutcode=fr
+          netcfg/choose_interface=auto
+          {% if ip_allocation_policy == 'dynamic' %}
+          netcfg/disable_autoconfig=false
+          netcfg/dhcp_timeout=60
+          netcfg/get_hostname=ubuntu-{{ vm_name }}
+          {% else %}
+          netcfg/disable_autoconfig=true
+          netcfg/get_ipaddress={{ static_ip }}
+          netcfg/get_netmask={{ netmask }}
+          netcfg/get_gateway={{ gateway }}
+          netcfg/get_nameservers={{ dns_servers }}
+          netcfg/confirm_static=true
+          {% endif %}
+      register: deploy_vm
+
+    - name: Display VM IP
+      debug:
+        var: deploy_vm.instance.ipv4
+
+    - name: Wait for SSH to become available
+      wait_for:
+        host: "{{ deploy_vm.instance.ipv4 }}"
+        port: 22
+        delay: 10
+        timeout: 300
+
+- name: Configure Ubuntu server
+  hosts: "{{ hostvars['localhost']['deploy_vm']['instance']['ipv4'] }}"
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: dist
+
+    - name: Install common packages
+      apt:
+        name:
+          - vim
+          - htop
+          - curl
+          - git
+        state: present
+
+    - name: Configure firewall
+      ufw:
+        rule: allow
+        port: "22"
+        proto: tcp
+
+    - name: Enable firewall
+      ufw:
+        state: enabled
+
+    - name: Set timezone
+        timezone:
+          name: Europe/Paris
