@@ -3,9 +3,7 @@
   hosts: esxi
   gather_facts: no
   vars:
-    iso_path: "[datastore 1] ISO/ubuntu-22.04-live-server-amd64.iso"
     preseed_url: "http://your_web_server/ubuntu-preseed.cfg"
-    ip_allocation_policy: "static"  # Can be 'dynamic' or 'static'
     static_ip: "192.168.25.10"  # Défini dynamiquement ou via une variable d'inventaire
     netmask: "255.255.255.0"
     gateway: "192.168.1.1"
@@ -56,7 +54,7 @@
             - cdrom
             - disk
       boot_firmware: efi
-      boot_params: |
+      boot_params: >
         auto=true priority=critical
         url={{ preseed_url }}
         debian-installer/locale=en_US
