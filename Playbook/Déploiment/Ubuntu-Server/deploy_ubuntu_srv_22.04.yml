@@ -12,7 +12,7 @@
     vm_name: "ubuntu-22-04"
     iso_path: "[datastore1] ISO/ubuntu-22.04-live-server-amd64.iso"  # Ajustez selon votre environnement
 
- tasks:
+   tasks:
     - name: Create VM
       community.vmware.vmware_guest:
         hostname: "{{ esxi_hostname }}"
