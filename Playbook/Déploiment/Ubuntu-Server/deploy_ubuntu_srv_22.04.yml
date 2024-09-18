@@ -19,7 +19,6 @@
         username: "{{ esxi_user }}"
         password: "{{ esxi_pass }}"
         validate_certs: no
-        datacenter: "{{ datacenter_name }}"
         datastore: "{{ datastore_name }}"
         folder: "/"
         name: "{{ vm_name }}"
