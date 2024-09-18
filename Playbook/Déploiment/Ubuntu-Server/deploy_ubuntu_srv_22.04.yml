@@ -10,8 +10,8 @@
     gateway: "192.168.25.254"  # Assurez-vous que c'est la bonne passerelle pour votre réseau
     dns_servers: "8.8.8.8 8.8.4.4"
     vm_name: "ubuntu-22-04"
-    iso_path: "[datastore 1] ISO/ubuntu-22.04-live-server-amd64.iso"  # Ajustez selon votre environnement
-
+    iso_path: "[datastore 1] ISO/ubuntu-22.04.4-live-server-amd64.iso"  # Ajustez selon votre environnement
+    
   tasks:
     - name: Create VM
       community.vmware.vmware_guest:
