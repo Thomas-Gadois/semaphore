@@ -7,7 +7,7 @@
     ip_allocation_policy: "static"  # Can be 'dynamic' or 'static'
     static_ip: "192.168.25.10"  # Défini dynamiquement ou via une variable d'inventaire
     netmask: "255.255.255.0"
-    gateway: "192.168.25.1"  # Assurez-vous que c'est la bonne passerelle pour votre réseau
+    gateway: "192.168.25.254"  # Assurez-vous que c'est la bonne passerelle pour votre réseau
     dns_servers: "8.8.8.8 8.8.4.4"
     vm_name: "ubuntu-22-04"
     iso_path: "[datastore1] ISO/ubuntu-22.04-live-server-amd64.iso"  # Ajustez selon votre environnement
@@ -23,7 +23,7 @@
         validate_certs: no
         name: "{{ vm_name }}"
         guest_id: ubuntu64Guest
-        state: poweredon  # Changé à poweredon pour démarrer la VM après la création
+        state: poweredon
         hardware:
           boot_firmware: efi
           num_cpus: 2
@@ -39,12 +39,13 @@
           - size_gb: 20
             type: thin
             datastore: "{{ datastore_name }}"
-            controller_type: 'paravirtual'  # Changé à paravirtual pour la compatibilité
+            controller_type: 'paravirtual'
+            controller_number: 0
             unit_number: 0
         networks:
-          - name: LAN  # Utilisez une variable pour le nom du réseau
-            device_type: vmxnet3  # Changé à vmxnet3 pour de meilleures performances
-        wait_for_ip_address: yes  # Changé à yes pour attendre l'IP
+          - name: LAN
+            device_type: vmxnet3
+        wait_for_ip_address: yes
         customization:
           dns_servers: "{{ dns_servers.split() }}"
         boot_options:
